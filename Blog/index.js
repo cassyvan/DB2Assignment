@@ -47,10 +47,8 @@ module.exports = async function (context, req) {
             body: { "stack": context.res.stack, "error": error }
         }
         return context.done();
-        
     }
 }
-
 
 const getFun = async function (req) {
     if (req?.query.id || (req?.body && req?.body?.id)) {

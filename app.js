@@ -1,36 +1,37 @@
+// const { set } = require("express/lib/application");
 
-// async function GetData() {
+// getting
+function getData() {
+    let url = 'https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==';
+    fetch(url)
+        .then(response => response.json())
+        .then(data => console.log(data.response));
+        // .then(data => console.log(data.response[0].title));
+}
 
-//     try {
-//       const response = await fetch('https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==', {
-//         method: 'GET',
-//         headers: new Headers({'content-type': 'application/json'}),
-//         mode: 'no-cors'
-//       });
-  
-//       if (!response.ok) {
-//         throw new Error();
-//       }
-//       console.log(response)
-//       const result = await response.json();
-//       console.log(result)
-//       return result;
-//     } catch (err) {
-//       console.log(err);
-//     }
-// }
-
-// GetData();
-
-const db = require("../Lib/db");
-await db.init(context);
-let context = 'https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw=='
-module.exports = async function(context) {
-    let retMsg = 'Hello, world!';
-    return {
-        httpResponse: {
-            body: retMsg
-        },
-        queueOutput: retMsg
+// posting
+function postData() {
+    const data = { 
+        title: 'title',
+        text: 'text'
     };
-};
+    fetch('https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==', {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+}
+
+
+// Second alternative
+// let xhr = new XMLHttpRequest();
+    // xhr.open('POST', 'https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==&title=bar&text=ipsum');
+    // xhr.setRequestHeader('Accept', 'application/json');
+    // xhr.setRequestHeader('Content-Type', 'application/json');
+    // xhr.send();
+    // // xhr.send(`{
+    // //     'title': '123',
+    // //     'text': '456'
+    // // }`)
