@@ -8,6 +8,7 @@ MRU University, Calgary, Canada
 const db = require("../Lib/db2");
 // To test use curl command:
 // curl -X GET -d "{'id': '622999fc3eb6b9f1bc763bc7'}" http://localhost:7071/api/blog
+
 module.exports = async function (context, req) {
     context.log('Comments function started.');
     try {

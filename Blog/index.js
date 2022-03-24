@@ -9,8 +9,6 @@ const db = require("../Lib/db");
 // To test use curl command:
 // curl -X GET -d "{'id': '622999fc3eb6b9f1bc763bc7'}" http://localhost:7071/api/blog
 
-
-
 module.exports = async function (context, req) {
     context.log('Blog function started.');
     try {
@@ -55,18 +53,18 @@ const getFun = async function (req) {
         return await db.getPostsByIds([req?.query.id || req?.body?.id]);
     } else {
         // allows empty query to return all items
-        return await db.getPosts();
-
-        
+        return await db.getPosts();        
     }
 }
 
 const addFun = async function (req) {
+    
+    let username = req?.query.username || (req?.body && req?.body?.username);
     let title = req?.query.title || (req?.body && req?.body?.title);
     let text = req?.query.text || (req?.body && req?.body?.text);
     let date = req?.query.date || (req?.body && req?.body?.date);
     if (title) {
-        let ids = await db.Add([{ "title": title, "text": text, "date": date }]);
+        let ids = await db.Add([{ "username": username, "title": title, "text": text, "date": date }]);
         return await db.getPostsByIds(Object.values(ids.insertedIds));
     } else {
         throw Error("Please specify the blog title.");
@@ -78,10 +76,12 @@ const updateFun = async function (req) {
     let id = req?.query.id || (req?.body && req?.body?.id);
     if (id) {
         // Construct the update object from the given title and/or text 
+        let username = req?.query.username || (req?.body && req?.body?.username);
         let title = req?.query.title || (req?.body && req?.body?.title);
         let text = req?.query.text || (req?.body && req?.body?.text);
         let date = req?.query.date || (req?.body && req?.body?.date);
-        let updateObj = title ? { "title": title } : {};
+        let updateObj = title ? { "username": username } : {};
+        updateObj = title ? { ...updateObj, "title": title } : updateObj;
         updateObj = text ? { ...updateObj, "text": text } : updateObj;
         updateObj = date ? { ...updateObj, "date": date } : updateObj;
         // Update the post
