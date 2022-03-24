@@ -5,9 +5,10 @@ MRU University, Calgary, Canada
 */
 // Don't forget to globally install "Azure Functions Core Tools"
 // npm install -g azure-functions-core-tools@3 --unsafe-perm true
-const db = require("../Lib/db");
+const db = require("../Lib/db2");
 // To test use curl command:
 // curl -X GET -d "{'id': '622999fc3eb6b9f1bc763bc7'}" http://localhost:7071/api/blog
+
 module.exports = async function (context, req) {
     context.log('Comments function started.');
     try {
@@ -60,8 +61,9 @@ const getFun = async function (req) {
 const addFun = async function (req) {
     let title = req?.query.title || (req?.body && req?.body?.title);
     let comment = req?.query.comment || (req?.body && req?.body?.comment);
+    let date = req?.query.date || (req?.body && req?.body?.date);
     if (title) {
-        let ids = await db.Add([{ "title": title, "comment": comment }]);
+        let ids = await db.Add([{ "title": title, "comment": comment, "date": date }]);
         return await db.getPostsByIds(Object.values(ids.insertedIds));
     } else {
         throw Error("Please specify the blog title.");
@@ -75,8 +77,10 @@ const updateFun = async function (req) {
         // Construct the update object from the given title and/or text 
         let title = req?.query.title || (req?.body && req?.body?.title);
         let comment = req?.query.comment || (req?.body && req?.body?.comment);
+        let date = req?.query.date || (req?.body && req?.body?.date);
         let updateObj = title ? { "title": title } : {};
         updateObj = comment ? { ...updateObj, "comment": comment } : updateObj;
+        updateObj = date ? { ...updateObj, "date": date } : updateObj;
         // Update the post
         let result = await db.updatePostsByIds([id], updateObj);
         return `Updated ${result.modifiedCount} posts`;

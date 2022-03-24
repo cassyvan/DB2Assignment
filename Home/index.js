@@ -39,23 +39,31 @@ module.exports = async function (context, req) {
         case "POST":    // Adds new post
             method = 'post';   // the HTTP method, can be get, post, put, patch, delete, etc.
             data = {  // any data you like to send to the other function
+                "username": (req?.body && req?.body?.username) || "New post username",
                 "title": (req?.body && req?.body?.title) || "New post title",
-                "text": (req?.body && req?.body?.text) || `New post on ${(new Date()).toLocaleString()}`
+                "text": (req?.body && req?.body?.text) || "New post text",
+                "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
 
+                // "username": (req?.body && req?.body?.username) || "New post username",
                 // "title": (req?.body && req?.body?.title) || "New post title",
-                // "comment": (req?.body && req?.body?.comment) || `New post on ${(new Date()).toLocaleString()}`
+                // "comment": (req?.body && req?.body?.comment) || "New post comment"
+                // "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
             };
             break;
         case "PATCH":   // Update existing record
             method = 'patch';   // the HTTP method, can be get, post, put, patch, delete, etc.
             data = {  // any data you like to send to the other function
                 "id": (req?.body && req?.body?.id) || "622999fc3eb6b9f1bc763bc7",    // Existing record id
+                "username": (req?.body && req?.body?.username) || "New post username",
                 "title": (req?.body && req?.body?.title) || "New post title",
-                "text": (req?.body && req?.body?.text) || `New post on ${(new Date()).toLocaleString()}`
+                "text": (req?.body && req?.body?.text) || "New post text",
+                "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
 
                 // "id": (req?.body && req?.body?.id) || "622999fc3eb6b9f1bc763bc7",    // Existing record id
+                // "username": (req?.body && req?.body?.username) || "New post username",
                 // "title": (req?.body && req?.body?.title) || "New post title",
-                // "comment": (req?.body && req?.body?.comment) || `New post on ${(new Date()).toLocaleString()}`
+                // "comment": (req?.body && req?.body?.comment) || "New post comment"
+                // "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
             };
             break;
         case "DELETE":
