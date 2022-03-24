@@ -64,8 +64,9 @@ const getFun = async function (req) {
 const addFun = async function (req) {
     let title = req?.query.title || (req?.body && req?.body?.title);
     let text = req?.query.text || (req?.body && req?.body?.text);
+    let date = req?.query.date || (req?.body && req?.body?.date);
     if (title) {
-        let ids = await db.Add([{ "title": title, "text": text }]);
+        let ids = await db.Add([{ "title": title, "text": text, "date": date }]);
         return await db.getPostsByIds(Object.values(ids.insertedIds));
     } else {
         throw Error("Please specify the blog title.");
@@ -79,8 +80,10 @@ const updateFun = async function (req) {
         // Construct the update object from the given title and/or text 
         let title = req?.query.title || (req?.body && req?.body?.title);
         let text = req?.query.text || (req?.body && req?.body?.text);
+        let date = req?.query.date || (req?.body && req?.body?.date);
         let updateObj = title ? { "title": title } : {};
         updateObj = text ? { ...updateObj, "text": text } : updateObj;
+        updateObj = date ? { ...updateObj, "date": date } : updateObj;
         // Update the post
         let result = await db.updatePostsByIds([id], updateObj);
         return `Updated ${result.modifiedCount} posts`;

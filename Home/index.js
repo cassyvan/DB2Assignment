@@ -40,10 +40,12 @@ module.exports = async function (context, req) {
             method = 'post';   // the HTTP method, can be get, post, put, patch, delete, etc.
             data = {  // any data you like to send to the other function
                 "title": (req?.body && req?.body?.title) || "New post title",
-                "text": (req?.body && req?.body?.text) || `New post on ${(new Date()).toLocaleString()}`
+                "text": (req?.body && req?.body?.text) || "New post text",
+                "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
 
                 // "title": (req?.body && req?.body?.title) || "New post title",
-                // "comment": (req?.body && req?.body?.comment) || `New post on ${(new Date()).toLocaleString()}`
+                // "comment": (req?.body && req?.body?.comment) || "New post comment"
+                // "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
             };
             break;
         case "PATCH":   // Update existing record
@@ -51,11 +53,13 @@ module.exports = async function (context, req) {
             data = {  // any data you like to send to the other function
                 "id": (req?.body && req?.body?.id) || "622999fc3eb6b9f1bc763bc7",    // Existing record id
                 "title": (req?.body && req?.body?.title) || "New post title",
-                "text": (req?.body && req?.body?.text) || `New post on ${(new Date()).toLocaleString()}`
+                "text": (req?.body && req?.body?.text) || "New post text",
+                "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
 
                 // "id": (req?.body && req?.body?.id) || "622999fc3eb6b9f1bc763bc7",    // Existing record id
                 // "title": (req?.body && req?.body?.title) || "New post title",
-                // "comment": (req?.body && req?.body?.comment) || `New post on ${(new Date()).toLocaleString()}`
+                // "comment": (req?.body && req?.body?.comment) || "New post comment"
+                // "date": (req?.body && req?.body?.date) || `New date on ${(new Date()).toLocaleString()}`
             };
             break;
         case "DELETE":
