@@ -1,10 +1,208 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+    <!-- <script type="text/javascript" src="app.js"></script> -->
 </head>
     
-<body>
+<body style='background-color: #CDCDCD;'>
     <h1>Single Post</h1>
+
+    <h2>Comments</h2>
+    <div class="container">
+        <div id="allComments"></div>
+        <hr>
+        <label for=""> Leave a Comment:</label><br>
+        <input type="text" id="userInput" name="username" placeholder="Username""><br>
+        <textarea id="newComment" placeholder="Your comment"></textarea><br>
+        <button id="addComments">Submit your Comment</button>
+    </div>
+
 </body>
 </html>
+
+<script>
+
+const getComment = () => {
+  let url = "https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==";
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      renderPostComment(data.response);
+      console.log(data.response);
+    })
+    .catch((error) => console.log(error));
+}
+
+// Grab all comments from MongoDB for this post on initial load 
+const renderPostComment = (postComments) => {
+    let totalPost = postComments.length;
+    if (totalPost != 0) {
+        for (let i=0; i < totalPost; i++) {
+
+            commentUser = postComments[i].username.bold();
+            commentText = postComments[i].comment;
+            commentDate = postComments[i].date.toLocaleString('en-US');
+
+            populateComment(commentUser, commentText, commentDate);
+        }
+    }
+}
+
+// add comments dynamically
+const commentContainer = document.getElementById('allComments');
+document.getElementById('addComments').addEventListener('click', function () {
+
+    var date = new Date().toLocaleString('en-US')
+    postComment(date);
+    addComment(date);
+});
+
+const postComment = (date) => {
+  var username = document.getElementById("userInput").value;
+  var comment = document.getElementById("newComment").value;
+
+//   const urlSearchParams = new URLSearchParams(window.location.search);
+//   const params = Object.fromEntries(urlSearchParams.entries());
+//   var title = params.title;
+
+  const data = { 
+      username: username,
+      title: "(BlogTitle)",
+      comment: comment,
+      date: date
+    };
+    console.log(data)
+    fetch('https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==', {
+      method: 'POST', // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+}
+
+// handles comments added dynamically or any comment chains
+function addComment(date) {
+
+    commentUser = document.getElementById('userInput').value.bold();
+    commentText = document.getElementById('newComment').value;
+
+    populateComment(commentUser, commentText, date);
+}
+
+const populateComment = (commentUser, commentText, commentDate) => {
+    const textBox = document.createElement('div');
+    const replyButton = document.createElement('button');
+    const likeButton = document.createElement('button');
+    likeButton.innerHTML = 'Like';
+    likeButton.className = 'likeComment';
+    const deleteButton = document.createElement('button');
+    deleteButton.innerHTML = 'Delete';
+    deleteButton.className = 'deleteComment';
+    const wrapDiv = document.createElement('div');
+    wrapDiv.className = 'wrapper';
+    wrapDiv.style.marginLeft = 0;
+    document.getElementById('userInput').value = '';
+    document.getElementById('newComment').value = '';
+    textBox.innerHTML = `<hr>${commentDate}<h4>${commentUser}</h4>${commentText}`
+    wrapDiv.append(textBox, likeButton, deleteButton);
+    commentContainer.appendChild(wrapDiv);
+}
+  
+// handles reply, like, and delete button
+function hasClass(elem, className) {
+    return elem.className.split(' ').indexOf(className) > -1;
+}
+
+document.getElementById('allComments').addEventListener('click', function (e) {
+    if(hasClass(e.target, 'likeComment')) {
+         const likeBtnValue = e.target.innerHTML;
+         e.target.innerHTML = likeBtnValue !== 'Like' ? Number.parseInt(likeBtnValue) + 1 : 1;
+    } else if(hasClass(e.target, 'deleteComment')) {
+        e.target.parentElement.remove();
+    }
+});
+
+getComment();
+
+</script>
+
+<style>
+    .container {
+        margin: 0 100px 100px 100px;
+        background: #fff;
+        border-radius: 8px;
+    }
+
+    .comment {
+        display: block;
+        transition: all 1s;
+    }
+    .commentClicked {
+        min-height: 0px;
+        border: 1px solid #eee;
+        border-radius: 5px;
+        padding: 5px 10px
+    }
+    .container textarea, input {
+        width: 50%;
+        border: none;
+        background: #E8E8E8;
+        padding: 5px 10px;
+        border-radius: 5px 5px 0px 0px;
+        border-bottom: 2px solid #016BA8;
+        transition: all 0.5s;
+        margin-top: 20px;
+        margin-left: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    textarea {
+        height: 100px;
+    }
+
+    button.primaryContained {
+        background: #016ba8;
+        color: #fff;
+        padding: 10px 10px;
+        border: none;
+        margin-top: 0px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.25);
+        transition: 1s all;
+        font-size: 10px;
+        border-radius: 5px;
+    }
+
+    #allComments {
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: small;
+        height: 700px;
+        overflow: auto;
+    }
+
+    h2 {
+        margin-left: 100px;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .wrapper, label {
+        padding: 20px;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    button {
+        margin: 20px 20px 0 0;
+    }
+
+    #addComments {
+        margin: 20px;
+    }
+
+    label, h2 {
+        font-weight: bold;
+    }
+</style>

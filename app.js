@@ -1,18 +1,14 @@
 // let blogData = [];
 
-
 window.onload = function(){
-  // document.getElementById("modal").style.display='none';
   getData();
-  $(".btn").click(function(){
-    $("#myModal").modal('show');
-  });
-
-  $(".bs-example").style.position = "absolute";
-  $(".bs-example").style.top = "145px";
-  $(".bs-example").style.right = "20px";
+  openModal();
+  // getComment();
 };
 
+const alertTest = () => {
+  alert("Workings")
+}
 // getting
 function getData() {
   let url = "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
@@ -54,11 +50,7 @@ function postData() {
 }
 
 const renderBlogPost = (blogPostInfo) => {
-
-  const blogTable = document.getElementById("container");
-  // let lastPost = blogPostInfo.length - 1;
   let totalPost = blogPostInfo.length;
-
   if (totalPost != 0) {
     for (let i=0; i < totalPost; i++) {
 
@@ -78,28 +70,23 @@ const createPostElement = (username, title, text, date) => {
   const blogPost = document.createElement("div");
   const blogImage = document.createElement("img")
   const blogTitle = document.createElement("h4")
-  const blogUser = document.createElement("p")
-  const blogDate = document.createElement("p")
-  const blogText = document.createElement("p");
+  const blogInfo = document.createElement("p")
   const readMore = document.createElement("button");
 
   blogTable.appendChild(blogPost);
   blogPost.appendChild(blogImage);
   blogPost.appendChild(blogTitle);
-  blogPost.appendChild(blogUser);
-  blogPost.appendChild(blogDate);
-  blogPost.appendChild(blogText);
+  blogPost.appendChild(blogInfo);
   blogPost.appendChild(readMore);
 
   blogTitle.innerText = title
-  blogUser.innerText = "By " + username;;
-  blogDate.innerText = date;;
-  blogText.innerText = text;
+  blogInfo.innerText = `By ${username} \n ${date} \n ${text}`
   readMore.innerText = "Read More";
   readMore.onclick = function() {
-    window.location.href='singlePost.html'
+    window.location.href=`singlePost.html?username=${username}&title=${title}`
   }
 
+  blogPost.id = 
   blogPost.setAttribute('align', 'center');
   blogImage.setAttribute('src', '/images/sample.jpg');
 
@@ -109,3 +96,20 @@ const createPostElement = (username, title, text, date) => {
   blogImage.style.width = "400px";
 }
 
+const openModal = () => {
+  $(".btn").click(function(){
+    $("#myModal").modal('show');
+  });
+
+  $(".bs-example").style.position = "absolute";
+  $(".bs-example").style.top = "145px";
+  $(".bs-example").style.right = "20px";
+}
+
+// const getComment = () => {
+//   // const addComment = document.getElementsByClassName('primaryContained');
+//   alert("Comment added")
+  
+// }
+
+  
