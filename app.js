@@ -1,130 +1,137 @@
-// let blogData = [];
+let blogPostList = [];
+let url = "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
 
-
-window.onload = function(){
-  // document.getElementById("modal").style.display='none';
+window.onload = function () {
   getData();
-  $(".btn").click(function(){
-    $("#myModal").modal('show');
-  });
-
-  $(".bs-example").style.position = "absolute";
-  $(".bs-example").style.top = "145px";
-  $(".bs-example").style.right = "20px";
+  openModal();
 };
 
 // getting
 function getData() {
-  let url = "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
-      renderBlogPost(data.response);
+      setInitialBlogPosts(data.response);
     })
     .catch((error) => console.log(error));
 }
 
 // posting
 function postData() {
-  var username = document.getElementById("userInput").value;
-  var title = document.getElementById("userTitle").value;
-  var description = document.getElementById("userDescription").value;
+  let username = document.getElementById("userInput").value;
+  let title = document.getElementById("userTitle").value;
+  let description = document.getElementById("userDescription").value;
+  let date = new Date().toLocaleString("en-US");
 
-  var today = new Date();
-  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+ ' ' + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-
-
-  const data = { 
-      username: username,
-      title: title,
-      text: description,
-      date: date
-    };
-    fetch('https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==', {
-      method: 'POST', // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
-  createPostElement(username, title, description, date);
-  $('form')[0].reset();
-
+  const data = {
+    username: username,
+    title: title,
+    text: description,
+    date: date,
+  };
+  fetch(url, {
+    method: "POST", // or 'PUT'
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  addBlogPosts(data);
+  $("form")[0].reset();
 }
 
-// updating (will figure this out later)
-function updatePost(currentUsername, currentTitle, currentDescription, newUsername, newTitle, newDescription) {
-  const data = { 
-      username: username,
-      title: title,
-      text: description,
-      date: date
-    };
-    fetch("https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==", {
-      method: 'PATCH',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
-}
-
-const renderBlogPost = (blogPostInfo) => {
-
-  const blogTable = document.getElementById("container");
-  // let lastPost = blogPostInfo.length - 1;
-  let totalPost = blogPostInfo.length;
-
-  if (totalPost != 0) {
-    for (let i=0; i < totalPost; i++) {
-
-      let username = blogPostInfo[i].username
-      let title = blogPostInfo[i].title
-      let text = blogPostInfo[i].text
-      let date = blogPostInfo[i].date
-
-      createPostElement(username, title, text, date);
-    }
-  }
-  console.log(blogPostInfo);
+const setInitialBlogPosts = (blogPostInfo) => {
+  blogPostInfo.forEach((post) => {
+    blogPostList.push(post);
+  });
+  renderBlogPosts();
 };
 
-const createPostElement = (username, title, text, date) => {
+const renderBlogPosts = () => {
+  blogPostList.reverse().forEach((post) => {
+    createPostElement(post, true);
+  });
+};
+
+const createPostElement = (post, initial) => {
   const blogTable = document.getElementById("container");
   const blogPost = document.createElement("div");
-  const blogTitle = document.createElement("h4")
-  const blogUser = document.createElement("p")
-  const blogDate = document.createElement("p")
-  const blogText = document.createElement("p");
+  const blogTitle = document.createElement("h4");
+  const blogInfo = document.createElement("p")
   const updateBtn = document.createElement("button");
-  const readMore = document.createElement("button");
+  const viewComments = document.createElement("button");
+  const deletePost = document.createElement("button");
 
-  blogTable.appendChild(blogPost);
+  if (initial) {
+    blogTable.appendChild(blogPost);
+  } else {
+    blogTable.insertBefore(blogPost, blogTable.firstChild);
+  }
   blogPost.appendChild(blogTitle);
-  blogPost.appendChild(blogUser);
-  blogPost.appendChild(blogDate);
-  blogPost.appendChild(blogText);
+  blogPost.appendChild(blogInfo);
   blogPost.appendChild(updateBtn);
-  blogPost.appendChild(readMore);
+  blogPost.appendChild(viewComments);
+  blogPost.appendChild(deletePost);
 
-  blogTitle.innerText = title
-  blogUser.innerText = "By " + username;;
-  blogDate.innerText = date;;
-  blogText.innerText = text;
+  blogTitle.innerText = post.title;
+  blogInfo.innerText = `By ${post.username} \n ${post.date} \n ${post.text}`;
   updateBtn.innerText = "Edit Post";
-  readMore.innerText = "Read More";
+  viewComments.innerText = "View Comments";
+  deletePost.innerText = "Delete Post";
+
+  blogPost.id = post._id;
+  deletePost.className = "deletePost";
+
   updateBtn.onclick = function() {
     showEditPost(blogTitle, blogUser, blogText, blogPost, updateBtn, readMore, blogDate);
   }
-  readMore.onclick = function() {
-    window.location.href='singlePost.html'
+
+  viewComments.onclick = function (e) {
+    let postID = e.target.parentElement.id;
+    window.location.href = `singlePost.html?id=${postID}`;
+  };
+
+  deletePost.addEventListener('click', (e) => {
+    if (hasClass(e.target, 'deletePost')) {
+      deleteSelectedPost(post)
+      e.target.parentElement.remove();
+    }
+  })
+
+  function hasClass(elem, className) {
+    return elem.className.split(' ').indexOf(className) > -1;
   }
 
-  blogPost.setAttribute('align', 'center');
+  function deleteSelectedPost(post) {
+    let postId = post._id;
+    fetch(`${url}&id=${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => console.log(res))
+      .catch((data) => console.log(data));
+  };
+
+  blogPost.setAttribute("align", "center");
   blogPost.style.margin = "50px";
+};
+
+const addBlogPosts = (post) => {
+  blogPostList.unshift(post);
+  createPostElement(post, false)
 }
+
+const openModal = () => {
+  $(".btn").click(function () {
+    $("#myModal").modal("show");
+  });
+
+  $(".bs-example").style.position = "absolute";
+  $(".bs-example").style.top = "145px";
+  $(".bs-example").style.right = "20px";
+};
 
 function showEditPost(blogTitle, blogUser, blogText, blogPost, updateBtn, readMore, blogDate) {
   //Creating DOM elements for the user to use to edit posts

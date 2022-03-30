@@ -59,11 +59,12 @@ const getFun = async function (req) {
 }
 
 const addFun = async function (req) {
+    let username = req?.query.username || (req?.body && req?.body?.username);
     let title = req?.query.title || (req?.body && req?.body?.title);
     let comment = req?.query.comment || (req?.body && req?.body?.comment);
     let date = req?.query.date || (req?.body && req?.body?.date);
     if (title) {
-        let ids = await db.Add([{ "title": title, "comment": comment, "date": date }]);
+        let ids = await db.Add([{ "username": username, "title": title, "comment": comment, "date": date }]);
         return await db.getPostsByIds(Object.values(ids.insertedIds));
     } else {
         throw Error("Please specify the blog title.");
@@ -75,10 +76,12 @@ const updateFun = async function (req) {
     let id = req?.query.id || (req?.body && req?.body?.id);
     if (id) {
         // Construct the update object from the given title and/or text 
+        let username = req?.query.username || (req?.body && req?.body?.username);
         let title = req?.query.title || (req?.body && req?.body?.title);
         let comment = req?.query.comment || (req?.body && req?.body?.comment);
         let date = req?.query.date || (req?.body && req?.body?.date);
-        let updateObj = title ? { "title": title } : {};
+        let updateObj = username ? { "username": username } : {};
+        updateObj = title ? { ...updateObj, "title": title } : updateObj;
         updateObj = comment ? { ...updateObj, "comment": comment } : updateObj;
         updateObj = date ? { ...updateObj, "date": date } : updateObj;
         // Update the post
