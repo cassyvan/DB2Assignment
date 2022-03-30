@@ -7,7 +7,7 @@
 <body style='background-color: #CDCDCD;'>
 
     <div id="postContainer"> </div>
-
+    <h3><a href="home.html">Back to Blog</a></h3>
     <h2>Comments</h2>
     <div class="container">
         <div id="allComments"></div>
@@ -80,7 +80,7 @@ const renderPostComment = (postComments) => {
                 commentText = postComments[i].comment;
                 commentDate = postComments[i].date.toLocaleString('en-US');
 
-                populateComment(commentUser, commentText, commentDate);
+                populateComment(commentUser, commentText, commentDate, postComments[i]._id);
                 total++
             }
         }
@@ -145,7 +145,7 @@ function addComment(date) {
     populateComment(commentUser, commentText, date);
 }
 
-const populateComment = (commentUser, commentText, commentDate) => {
+const populateComment = (commentUser, commentText, commentDate, commentId) => {
     const textBox = document.createElement('div');
     const replyButton = document.createElement('button');
     const likeButton = document.createElement('button');
@@ -154,6 +154,7 @@ const populateComment = (commentUser, commentText, commentDate) => {
     const deleteButton = document.createElement('button');
     deleteButton.innerHTML = 'Delete';
     deleteButton.className = 'deleteComment';
+    deleteButton.id = commentId
     const wrapDiv = document.createElement('div');
     wrapDiv.className = 'wrapper';
     wrapDiv.style.marginLeft = 0;
@@ -169,12 +170,23 @@ function hasClass(elem, className) {
     return elem.className.split(' ').indexOf(className) > -1;
 }
 
+let likeBtnValue = 0;
+
 document.getElementById('allComments').addEventListener('click', function (e) {
     if(hasClass(e.target, 'likeComment')) {
-         const likeBtnValue = e.target.innerHTML;
-         e.target.innerHTML = likeBtnValue !== 'Like' ? Number.parseInt(likeBtnValue) + 1 : 1;
+         likeBtnValue+=1
+         e.target.innerHTML = `Likes: ${likeBtnValue}`
     } else if(hasClass(e.target, 'deleteComment')) {
         e.target.parentElement.remove();
+        let commentId = e.target.id
+        fetch(`${commentUrl}&id=${commentId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => console.log(res))
+      .catch((data) => console.log(data));
     }
 });
 
