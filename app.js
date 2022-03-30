@@ -2,15 +2,12 @@ let blogPostList = [];
 let url =
   "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
 
-window.onload = function(){
+window.onload = function () {
   getData();
   openModal();
   // getComment();
 };
 
-const alertTest = () => {
-  alert("Workings")
-}
 // getting
 function getData() {
   fetch(url)
@@ -27,28 +24,23 @@ function postData() {
   let title = document.getElementById("userTitle").value;
   let description = document.getElementById("userDescription").value;
 
-  // var today = new Date();
-  // var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+ ' ' + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  let date = new Date().toLocaleString('en-US')
+  let date = new Date().toLocaleString("en-US");
 
-
-  const data = { 
-      username: username,
-      title: title,
-      text: description,
-      date: date
-    };
-    fetch(url, {
-      method: 'POST', // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
-  updateBlogPosts(true, data);
-  $('form')[0].reset();
-
+  const data = {
+    username: username,
+    title: title,
+    text: description,
+    date: date,
+  };
+  fetch(url, {
+    method: "POST", // or 'PUT'
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  addBlogPosts(data);
+  $("form")[0].reset();
 }
 
 const setInitialBlogPosts = (blogPostInfo) => {
@@ -91,57 +83,61 @@ const createPostElement = (post) => {
   blogText.innerText = post.text;
   readMore.innerText = "Read More";
   deletePost.innerText = "Delete Post";
+  deletePost.className = "deletePost";
 
   readMore.onclick = function () {
     window.location.href = "singlePost.html";
   };
 
-  deletePost.onclick = () => {
-    console.log(post._id);
-    updateBlogPosts(false, post);
+  deletePost.addEventListener('click', (e) => {
+    if (hasClass(e.target, 'deletePost')) {
+      deleteSelectedPost(post)
+      e.target.parentElement.remove();
+    }
+  })
+
+  function hasClass(elem, className) {
+    return elem.className.split(' ').indexOf(className) > -1;
+  }
+
+  function deleteSelectedPost(post) {
+    let postId = post._id;
+    fetch(`${url}&id=${postId}`, {
+      method: "DELETE", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => console.log(res))
+      .catch((data) => console.log(data));
   };
-  blogPost.setAttribute('align', 'center');
-  blogImage.setAttribute('src', '/images/sample.jpg');
+
+  blogPost.setAttribute("align", "center");
+  blogImage.setAttribute("src", "/images/sample.jpg");
 
   blogPost.style.margin = "50px";
   blogImage.style.margin = "20px";
   blogImage.style.height = "400px";
   blogImage.style.width = "400px";
-}
-
-const updateBlogPosts = (add, post) => {
-  if (add) {
-    blogPostList.push(post);
-  } else {
-    let postId = post._id;
-    fetch(url + postId, {
-      method: "DELETE", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // body: JSON.stringify(postId),
-    })
-      .then((res) => console.log(res))
-      // .then((res) => console.log(res))
-      .catch((data) => console.log(data));
-  }
-  renderBlogPosts();
 };
 
+const addBlogPosts = (post) => {
+  blogPostList.push(post);
+  renderBlogPosts()
+}
+
 const openModal = () => {
-  $(".btn").click(function(){
-    $("#myModal").modal('show');
+  $(".btn").click(function () {
+    $("#myModal").modal("show");
   });
 
   $(".bs-example").style.position = "absolute";
   $(".bs-example").style.top = "145px";
   $(".bs-example").style.right = "20px";
-}
+};
 
 // const getComment = () => {
 //   // const addComment = document.getElementsByClassName('primaryContained');
 //   alert("Comment added")
-  
-// }
 
-  
+// }
