@@ -5,7 +5,8 @@
 </head>
     
 <body style='background-color: #CDCDCD;'>
-    <h1>Single Post</h1>
+
+    <div id="postContainer"> </div>
 
     <h2>Comments</h2>
     <div class="container">
@@ -22,29 +23,81 @@
 
 <script>
 
+const urlSearchParams = new URLSearchParams(window.location.search);
+const params = Object.fromEntries(urlSearchParams.entries());
+const postId = params.id;
+const postUrl = "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
+const commentUrl = "https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==";
+
+const getSinglePost = () => {
+    fetch(`${postUrl}&id=${postId}` )
+        .then((response) => response.json())
+        .then((data) => {
+            postTitle = data.response[0].title;
+            renderPostInfo(data.response);
+    })
+    .catch((error) => console.log(error));
+}
+
+const renderPostInfo = (data) => {
+    const blogTable = document.getElementById("postContainer");
+    const blogPost = document.createElement("div");
+    // const blogImage = document.createElement("img");
+    const blogTitle = document.createElement("h1");
+    const blogInfo = document.createElement("p");
+
+    blogTable.appendChild(blogPost);
+    // blogPost.appendChild(blogImage);
+    blogPost.appendChild(blogTitle);
+    blogPost.appendChild(blogInfo);
+  
+    blogTitle.innerText = data[0].title;
+    blogInfo.innerText = `By ${data[0].username} \n ${data[0].date} \n\n ${data[0].text}`;
+
+    blogTable.style.textAlign = "center";
+    blogTitle.style.fontSize = "50px";
+    blogInfo.style.marginLeft = "0px"
+    blogInfo.style.fontSize = "20px"
+}
+
 const getComment = () => {
-  let url = "https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==";
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      renderPostComment(data.response);
-      console.log(data.response);
+    fetch(commentUrl)
+        .then((response) => response.json())
+        .then((data) => {
+        renderPostComment(data.response);
     })
     .catch((error) => console.log(error));
 }
 
 // Grab all comments from MongoDB for this post on initial load 
 const renderPostComment = (postComments) => {
-    let totalPost = postComments.length;
-    if (totalPost != 0) {
-        for (let i=0; i < totalPost; i++) {
+    let totalComment = postComments.length;
+    let total = 0;
+    if (totalComment != 0) {
+        for (let i=0; i < totalComment; i++) {
+            if (postComments[i].title == postId) {
+                commentUser = postComments[i].username.bold();
+                commentText = postComments[i].comment;
+                commentDate = postComments[i].date.toLocaleString('en-US');
 
-            commentUser = postComments[i].username.bold();
-            commentText = postComments[i].comment;
-            commentDate = postComments[i].date.toLocaleString('en-US');
-
-            populateComment(commentUser, commentText, commentDate);
+                populateComment(commentUser, commentText, commentDate);
+                total++
+            }
         }
+    }
+    adjustCommentBox(total);
+}
+
+const adjustCommentBox = (total) => {
+    const commentBox = document.getElementById('allComments');
+    if (total == 0) {
+        commentBox.style.height = "100px"
+        const p = document.createElement("p");
+        p.className = "noCommentText";
+        p.innerHTML = "There are currently no comments";
+        commentBox.appendChild(p);
+    } else {
+        commentBox.style.height = "500px"
     }
 }
 
@@ -58,36 +111,35 @@ document.getElementById('addComments').addEventListener('click', function () {
 });
 
 const postComment = (date) => {
-  var username = document.getElementById("userInput").value;
-  var comment = document.getElementById("newComment").value;
+    var username = document.getElementById("userInput").value;
+    var comment = document.getElementById("newComment").value;
 
-//   const urlSearchParams = new URLSearchParams(window.location.search);
-//   const params = Object.fromEntries(urlSearchParams.entries());
-//   var title = params.title;
-
-  const data = { 
-      username: username,
-      title: "(BlogTitle)",
-      comment: comment,
-      date: date
+    const data = { 
+        username: username,
+        title: postId,
+        comment: comment,
+        date: date
     };
-    console.log(data)
+
     fetch('https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==', {
-      method: 'POST', // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
+        method: 'POST', // or 'PUT'
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
 }
 
 // handles comments added dynamically or any comment chains
 function addComment(date) {
 
+    var element = document.getElementsByClassName('noCommentText')[0];
+    element.parentNode.removeChild(element);
+    const commentBox = document.getElementById('allComments');
+    commentBox.style.height = "500px"
+
     commentUser = document.getElementById('userInput').value.bold();
     commentText = document.getElementById('newComment').value;
-
     populateComment(commentUser, commentText, date);
 }
 
@@ -124,11 +176,13 @@ document.getElementById('allComments').addEventListener('click', function (e) {
     }
 });
 
+getSinglePost();
 getComment();
 
 </script>
 
 <style>
+
     .container {
         margin: 0 100px 100px 100px;
         background: #fff;
@@ -139,12 +193,14 @@ getComment();
         display: block;
         transition: all 1s;
     }
+
     .commentClicked {
         min-height: 0px;
         border: 1px solid #eee;
         border-radius: 5px;
         padding: 5px 10px
     }
+
     .container textarea, input {
         width: 50%;
         border: none;
@@ -155,11 +211,6 @@ getComment();
         transition: all 0.5s;
         margin-top: 20px;
         margin-left: 20px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    textarea {
-        height: 100px;
     }
 
     button.primaryContained {
@@ -178,31 +229,32 @@ getComment();
     }
 
     #allComments {
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: small;
-        height: 700px;
         overflow: auto;
     }
 
     h2 {
         margin-left: 100px;
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .wrapper, label {
         padding: 20px;
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .container textarea, input, allComments, h2, .wrapper, label, p {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     button {
         margin: 20px 20px 0 0;
     }
 
-    #addComments {
+    #addComments, p {
         margin: 20px;
     }
 
-    label, h2 {
+    label {
         font-weight: bold;
     }
+    
 </style>
