@@ -94,7 +94,6 @@ const renderBlogPost = (blogPostInfo) => {
 const createPostElement = (username, title, text, date) => {
   const blogTable = document.getElementById("container");
   const blogPost = document.createElement("div");
-  const blogImage = document.createElement("img")
   const blogTitle = document.createElement("h4")
   const blogUser = document.createElement("p")
   const blogDate = document.createElement("p")
@@ -103,7 +102,6 @@ const createPostElement = (username, title, text, date) => {
   const readMore = document.createElement("button");
 
   blogTable.appendChild(blogPost);
-  blogPost.appendChild(blogImage);
   blogPost.appendChild(blogTitle);
   blogPost.appendChild(blogUser);
   blogPost.appendChild(blogDate);
@@ -118,24 +116,18 @@ const createPostElement = (username, title, text, date) => {
   updateBtn.innerText = "Edit Post";
   readMore.innerText = "Read More";
   updateBtn.onclick = function() {
-    showEditPost(blogTitle, blogUser, blogText, blogImage, blogPost, updateBtn, readMore, blogDate);
+    showEditPost(blogTitle, blogUser, blogText, blogPost, updateBtn, readMore, blogDate);
   }
   readMore.onclick = function() {
     window.location.href='singlePost.html'
   }
 
   blogPost.setAttribute('align', 'center');
-  blogImage.setAttribute('src', '/images/sample.jpg');
-
   blogPost.style.margin = "50px";
-  blogImage.style.margin = "20px";
-  blogImage.style.height = "400px";
-  blogImage.style.width = "400px";
 }
 
-function showEditPost(blogTitle, blogUser, blogText, blogImage, blogPost, updateBtn, readMore, blogDate) {
+function showEditPost(blogTitle, blogUser, blogText, blogPost, updateBtn, readMore, blogDate) {
   //Creating DOM elements for the user to use to edit posts
-  let editImage = document.createElement("input");
   let editTitle = document.createElement("input");
   let editUser = document.createElement("input");
   let editText = document.createElement("textarea");
@@ -143,11 +135,9 @@ function showEditPost(blogTitle, blogUser, blogText, blogImage, blogPost, update
   const SAVE_BTN = document.createElement("button");
 
   //Modifying editable DOM elements to start off containing the original post's content
-  editImage.setAttribute("type", "file");
   editTitle.setAttribute("type", "text");
   editUser.setAttribute("type", "text");
   editText.setAttribute("type", "text");
-  editImage.setAttribute("value", blogImage.src);
   editTitle.setAttribute("value", blogTitle.innerText);
   editUser.setAttribute("value", blogUser.innerText);
   editText.innerText = blogText.innerText;
@@ -155,8 +145,8 @@ function showEditPost(blogTitle, blogUser, blogText, blogImage, blogPost, update
   SAVE_BTN.innerText = "Save";
 
   //Putting all DOM elements into arrays to simplify code for next steps
-  let originalItems = [blogImage, blogTitle, blogUser, blogDate, blogText, updateBtn, readMore];
-  let newItems = [editImage, editTitle, editUser, blogDate, editText, CANCEL_BTN, SAVE_BTN];
+  let originalItems = [blogTitle, blogUser, blogDate, blogText, updateBtn, readMore];
+  let newItems = [editTitle, editUser, blogDate, editText, CANCEL_BTN, SAVE_BTN];
 
   //Removing the original content from the post
   originalItems.forEach((blogItem) => {
@@ -179,7 +169,6 @@ function showEditPost(blogTitle, blogUser, blogText, blogImage, blogPost, update
     blogTitle.innerText = editTitle.value;
     blogUser.innerText = editUser.value;
     blogText.innerText = editText.value;
-    blogImage.setAttribute("src", editImage.value);
 
     putContentBack();
   }
