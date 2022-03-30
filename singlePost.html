@@ -133,8 +133,10 @@ const postComment = (date) => {
 // handles comments added dynamically or any comment chains
 function addComment(date) {
 
-    var element = document.getElementsByClassName('noCommentText')[0];
-    element.parentNode.removeChild(element);
+    if (document.getElementsByClassName('noCommentText').length != 0) {
+        var element = document.getElementsByClassName('noCommentText')[0];
+        element.parentNode.removeChild(element);
+    }
     const commentBox = document.getElementById('allComments');
     commentBox.style.height = "500px"
 
