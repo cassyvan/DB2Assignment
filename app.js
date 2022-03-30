@@ -49,12 +49,12 @@ const setInitialBlogPosts = (blogPostInfo) => {
 };
 
 const renderBlogPosts = () => {
-  blogPostList.forEach((post) => {
-    createPostElement(post);
+  blogPostList.reverse().forEach((post) => {
+    createPostElement(post, true);
   });
 };
 
-const createPostElement = (post) => {
+const createPostElement = (post, initial) => {
   const blogTable = document.getElementById("container");
   const blogPost = document.createElement("div");
   const blogImage = document.createElement("img");
@@ -63,7 +63,11 @@ const createPostElement = (post) => {
   const viewComments = document.createElement("button");
   const deletePost = document.createElement("button");
 
-  blogTable.appendChild(blogPost);
+  if (initial) {
+    blogTable.appendChild(blogPost);
+  } else {
+    blogTable.insertBefore(blogPost, blogTable.firstChild);
+  }
   blogPost.appendChild(blogImage);
   blogPost.appendChild(blogTitle);
   blogPost.appendChild(blogInfo);
@@ -97,7 +101,7 @@ const createPostElement = (post) => {
   function deleteSelectedPost(post) {
     let postId = post._id;
     fetch(`${url}&id=${postId}`, {
-      method: "DELETE", // or 'PUT'
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
@@ -116,8 +120,8 @@ const createPostElement = (post) => {
 };
 
 const addBlogPosts = (post) => {
-  blogPostList.push(post);
-  renderBlogPosts()
+  blogPostList.unshift(post);
+  createPostElement(post, false)
 }
 
 const openModal = () => {
