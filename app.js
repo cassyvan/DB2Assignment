@@ -1,11 +1,9 @@
 let blogPostList = [];
-let url =
-  "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
+let url = "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
 
 window.onload = function () {
   getData();
   openModal();
-  // getComment();
 };
 
 // getting
@@ -23,7 +21,6 @@ function postData() {
   let username = document.getElementById("userInput").value;
   let title = document.getElementById("userTitle").value;
   let description = document.getElementById("userDescription").value;
-
   let date = new Date().toLocaleString("en-US");
 
   const data = {
@@ -62,31 +59,28 @@ const createPostElement = (post) => {
   const blogPost = document.createElement("div");
   const blogImage = document.createElement("img");
   const blogTitle = document.createElement("h4");
-  const blogUser = document.createElement("p");
-  const blogDate = document.createElement("p");
-  const blogText = document.createElement("p");
-  const readMore = document.createElement("button");
+  const blogInfo = document.createElement("p")
+  const viewComments = document.createElement("button");
   const deletePost = document.createElement("button");
 
   blogTable.appendChild(blogPost);
   blogPost.appendChild(blogImage);
   blogPost.appendChild(blogTitle);
-  blogPost.appendChild(blogUser);
-  blogPost.appendChild(blogDate);
-  blogPost.appendChild(blogText);
-  blogPost.appendChild(readMore);
+  blogPost.appendChild(blogInfo);
+  blogPost.appendChild(viewComments);
   blogPost.appendChild(deletePost);
 
   blogTitle.innerText = post.title;
-  blogUser.innerText = "By " + post.username;
-  blogDate.innerText = post.date;
-  blogText.innerText = post.text;
-  readMore.innerText = "Read More";
+  blogInfo.innerText = `By ${post.username} \n ${post.date} \n ${post.text}`;
+  viewComments.innerText = "View Comments";
   deletePost.innerText = "Delete Post";
+
+  blogPost.id = post._id;
   deletePost.className = "deletePost";
 
-  readMore.onclick = function () {
-    window.location.href = "singlePost.html";
+  viewComments.onclick = function (e) {
+    let postID = e.target.parentElement.id;
+    window.location.href = `singlePost.html?id=${postID}`;
   };
 
   deletePost.addEventListener('click', (e) => {
@@ -136,8 +130,3 @@ const openModal = () => {
   $(".bs-example").style.right = "20px";
 };
 
-// const getComment = () => {
-//   // const addComment = document.getElementsByClassName('primaryContained');
-//   alert("Comment added")
-
-// }
