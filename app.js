@@ -83,7 +83,7 @@ const createPostElement = (post, initial) => {
   deletePost.className = "deletePost";
 
   updateBtn.onclick = function() {
-    showEditPost(blogTitle, blogUser, blogText, blogPost, updateBtn, readMore, blogDate);
+    showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, deletePost, post.username, post.date, post.text);
   }
 
   viewComments.onclick = function (e) {
@@ -133,27 +133,29 @@ const openModal = () => {
   $(".bs-example").style.right = "20px";
 };
 
-function showEditPost(blogTitle, blogUser, blogText, blogPost, updateBtn, readMore, blogDate) {
+function showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, deletePost, username, date, blogText) {
   //Creating DOM elements for the user to use to edit posts
   let editTitle = document.createElement("input");
-  let editUser = document.createElement("input");
+  let editUsername = document.createElement("input");
+  let markupDate = document.createElement("p");
   let editText = document.createElement("textarea");
   const CANCEL_BTN = document.createElement("button");
   const SAVE_BTN = document.createElement("button");
 
   //Modifying editable DOM elements to start off containing the original post's content
   editTitle.setAttribute("type", "text");
-  editUser.setAttribute("type", "text");
+  editUsername.setAttribute("type", "text");
   editText.setAttribute("type", "text");
   editTitle.setAttribute("value", blogTitle.innerText);
-  editUser.setAttribute("value", blogUser.innerText);
-  editText.innerText = blogText.innerText;
+  editUsername.setAttribute("value", username);
+  markupDate.innerText = date;
+  editText.innerText = blogText;
   CANCEL_BTN.innerText = "Cancel";
   SAVE_BTN.innerText = "Save";
 
   //Putting all DOM elements into arrays to simplify code for next steps
-  let originalItems = [blogTitle, blogUser, blogDate, blogText, updateBtn, readMore];
-  let newItems = [editTitle, editUser, blogDate, editText, CANCEL_BTN, SAVE_BTN];
+  let originalItems = [blogTitle, blogInfo, updateBtn, viewComments, deletePost];
+  let newItems = [editTitle, editUsername, markupDate, editText, CANCEL_BTN, SAVE_BTN];
 
   //Removing the original content from the post
   originalItems.forEach((blogItem) => {
@@ -172,10 +174,11 @@ function showEditPost(blogTitle, blogUser, blogText, blogPost, updateBtn, readMo
 
   //Adding an onclick listener for the save button
   SAVE_BTN.onclick = function() {
-    // updatePost(blogUser.innerText, blogTitle.innerText, blogText.innerText, editUser.value, editTitle.value, editText.value);
+    // updatePost(username, blogTitle.innerText, blogText, editUser.value, editTitle.value, editText.value);
+    username = editUsername.value;
+    blogText = editText.value;
     blogTitle.innerText = editTitle.value;
-    blogUser.innerText = editUser.value;
-    blogText.innerText = editText.value;
+    blogInfo.innerText = `By ${username} \n ${date} \n ${blogText}`;
 
     putContentBack();
   }
