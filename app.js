@@ -58,9 +58,16 @@ const createPostElement = (post, initial) => {
   const blogPost = document.createElement("div");
   const blogTitle = document.createElement("h4");
   const blogInfo = document.createElement("p")
-  const updateBtn = document.createElement("button");
-  const viewComments = document.createElement("button");
-  const deletePost = document.createElement("button");
+  const divider = document.createElement("div")
+  const updateBtn = document.createElement("a");
+  const viewComments = document.createElement("a");
+  const deletePost = document.createElement("a");
+  updateBtn.className = "waves-effect waves-light btn-large";
+  viewComments.className = "waves-effect waves-light btn-large";
+  deletePost.className = "waves-effect waves-light btn-large";
+
+  blogPost.className = "blogPost"
+  divider.className = "blogPostDivider"
 
   if (initial) {
     blogTable.appendChild(blogPost);
@@ -69,21 +76,22 @@ const createPostElement = (post, initial) => {
   }
   blogPost.appendChild(blogTitle);
   blogPost.appendChild(blogInfo);
+  blogPost.appendChild(divider);
   blogPost.appendChild(updateBtn);
   blogPost.appendChild(viewComments);
   blogPost.appendChild(deletePost);
 
   blogTitle.innerText = post.title;
-  blogInfo.innerText = `By ${post.username} \n ${post.date} \n ${post.text}`;
+  blogInfo.innerText = `By ${post.username}\n${post.date}\n\n${post.text}`;
   updateBtn.innerText = "Edit Post";
   viewComments.innerText = "View Comments";
   deletePost.innerText = "Delete Post";
 
   blogPost.id = post._id;
-  deletePost.className = "deletePost";
+  deletePost.id = "deletePost";
 
   updateBtn.onclick = function() {
-    showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, deletePost, post.username, post.date, post.text);
+    showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, deletePost, post.username, post.date, post.text, divider);
   }
 
   viewComments.onclick = function (e) {
@@ -91,12 +99,18 @@ const createPostElement = (post, initial) => {
     window.location.href = `singlePost.html?id=${postID}`;
   };
 
+  deletePost.onclick = function (e){
+    console.log(e)
+  }
   deletePost.addEventListener('click', (e) => {
-    if (hasClass(e.target, 'deletePost')) {
+    console.log("hi?")
+    if (e.target.id === "deletePost") {
       deleteSelectedPost(post)
       e.target.parentElement.remove();
     }
   })
+
+  // styleButtons(updateBtn, viewComments, deletePost)
 
   function hasClass(elem, className) {
     return elem.className.split(' ').indexOf(className) > -1;
@@ -113,9 +127,6 @@ const createPostElement = (post, initial) => {
       .then((res) => console.log(res))
       .catch((data) => console.log(data));
   };
-
-  blogPost.setAttribute("align", "center");
-  blogPost.style.margin = "50px";
 };
 
 const addBlogPosts = (post) => {
@@ -126,14 +137,19 @@ const addBlogPosts = (post) => {
 const openModal = () => {
   $(".btn").click(function () {
     $("#myModal").modal("show");
+    let x = document.querySelectorAll("a.waves-effect.waves-light.btn-large");
+    for (let i = 0; i < x.length; i++) {
+      x[i].style.zIndex = "-1"
+    }
+    // $("a.waves-effect.waves-light.btn-large").style.visibility = "hidden";
+    
   });
-
   $(".bs-example").style.position = "absolute";
   $(".bs-example").style.top = "145px";
   $(".bs-example").style.right = "20px";
 };
 
-function showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, deletePost, username, date, blogText) {
+function showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, deletePost, username, date, blogText, divider) {
   //Creating DOM elements for the user to use to edit posts
   let editTitle = document.createElement("input");
   let editUsername = document.createElement("input");
@@ -154,8 +170,8 @@ function showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, de
   SAVE_BTN.innerText = "Save";
 
   //Putting all DOM elements into arrays to simplify code for next steps
-  let originalItems = [blogTitle, blogInfo, updateBtn, viewComments, deletePost];
-  let newItems = [editTitle, editUsername, markupDate, editText, CANCEL_BTN, SAVE_BTN];
+  let originalItems = [blogTitle, blogInfo, updateBtn, viewComments, deletePost, divider];
+  let newItems = [editTitle, editUsername, markupDate, editText, CANCEL_BTN, SAVE_BTN, divider];
 
   //Removing the original content from the post
   originalItems.forEach((blogItem) => {
@@ -173,14 +189,32 @@ function showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, de
   }
 
   //Adding an onclick listener for the save button
-  SAVE_BTN.onclick = function() {
-    // updatePost(username, blogTitle.innerText, blogText, editUser.value, editTitle.value, editText.value);
+  SAVE_BTN.onclick = function(e) {
+    let postId = e.target.parentElement.id;
     username = editUsername.value;
     blogText = editText.value;
     blogTitle.innerText = editTitle.value;
-    blogInfo.innerText = `By ${username} \n ${date} \n ${blogText}`;
-
+    blogInfo.innerText = `By ${username}\n${date}\n\n${blogText}`;
     putContentBack();
+    updateDB(postId, editTitle.value, username, blogText, date);
+  }
+
+  const updateDB = (postId, title, username, description, date) => {
+
+    const data = {
+      username: username,
+      title: title,
+      text: description,
+      date: date,
+    };
+
+    fetch(`${url}&id=${postId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
   }
 
   //Puts all the content back the way it was before either modified or not so that the post looks normal again
@@ -204,3 +238,9 @@ function removeItemFromDOM(parentObject, obectToRemove) {
 function addItemToDOM(parentObject, obectToAdd) {
   parentObject.appendChild(obectToAdd);
 }
+
+// function styleButtons(button){
+//     const styledButton = document.createElement("a")
+//     styledButton.className = "waves-effect waves-light btn-large"
+//     button.appendChild(styledButton)
+// }
