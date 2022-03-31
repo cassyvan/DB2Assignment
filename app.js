@@ -137,13 +137,8 @@ const addBlogPosts = (post) => {
 const openModal = () => {
   $(".btn").click(function () {
     $("#myModal").modal("show");
-    let x = document.querySelectorAll("a.waves-effect.waves-light.btn-large");
-    for (let i = 0; i < x.length; i++) {
-      x[i].style.zIndex = "-1"
-    }
-    // $("a.waves-effect.waves-light.btn-large").style.visibility = "hidden";
-    
   });
+
   $(".bs-example").style.position = "absolute";
   $(".bs-example").style.top = "145px";
   $(".bs-example").style.right = "20px";
