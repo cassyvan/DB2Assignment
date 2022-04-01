@@ -1,23 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- <script type="text/javascript" src="app.js"></script> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 </head>
     
-<body style='background-color: #CDCDCD;'>
+<body>
 
-    <div id="postContainer"> </div>
-    <h3><a href="home.html">Back to Blog</a></h3>
-    <h2>Comments</h2>
-    <div class="container">
-        <div id="allComments"></div>
-        <hr>
-        <label for=""> Leave a Comment:</label><br>
-        <input type="text" id="userInput" name="username" placeholder="Username""><br>
-        <textarea id="newComment" placeholder="Your comment"></textarea><br>
-        <button id="addComments">Submit your Comment</button>
+
+<div class="bs-example">
+
+    <!-- Modal to add new comment -->
+    <div id="myModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Please leave a comment!</h4>
+                    </div>
+                <div class="modal-body">
+                    <form> 
+                    <label for="userInput"> Username:</label><br><br>
+                    <input type="userInput" id="userInput" name="userInput"><br><br>
+                    <label for="newComment">Comment:</label><br><br>
+                    <textarea type="text" id="newComment" name="newComment"></textarea><br><br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="postComment()" data-dismiss="modal">Add Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
+    <!-- Modal to edit comment -->
+    <div id="myModal2" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit comment</h4>
+                    </div>
+                <div class="modal-body">
+                    <form> 
+                    <label for="editUser"> New Username:</label><br><br>
+                    <input type="editUser" id="editUser" name="editUser"><br><br>
+                    <label for="editComment">New Comment:</label><br><br>
+                    <textarea type="text" id="editComment" name="editComment"></textarea><br><br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="updateComment()" data-dismiss="modal">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav-extended">
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo center">My Blog</a>
+          </ul>
+        </div>
+        <div class="nav-content">
+          <ul class="tabs tabs-transparent center">
+            <li class="tab active"><a href="#test1">Home</a></li>
+            <li class="tab"><a href="#test2">About</a></li>
+            <li class="tab"><a href="#test3">Contact</a></li>
+            <li class="tab"><a href="#test4">More Info</a></li>
+          </ul>
+        </div>
+        <div class="nav-content">
+          <span class="nav-title"></span>
+        </div>
+      </nav>
+
+    <h5><a href="home.html"><i class="small material-icons">keyboard_arrow_left</i> Back to Blog</a></h5>
+    <div id="postContainer">
+        <!-- Blog Post Information     -->
+    </div>
+    <h4> <i class="small material-icons">comment</i> Comments </h4>
+    <div class="container">
+        <div id="allComments"></div>
+        <a type="button" class="waves-effect waves-light btn-large" id="addComments">Add a Comment</a>
+    </div>
 </body>
 </html>
 
@@ -42,22 +109,21 @@ const getSinglePost = () => {
 const renderPostInfo = (data) => {
     const blogTable = document.getElementById("postContainer");
     const blogPost = document.createElement("div");
-    // const blogImage = document.createElement("img");
     const blogTitle = document.createElement("h1");
     const blogInfo = document.createElement("p");
 
     blogTable.appendChild(blogPost);
-    // blogPost.appendChild(blogImage);
     blogPost.appendChild(blogTitle);
     blogPost.appendChild(blogInfo);
+
   
-    blogTitle.innerText = data[0].title;
+    blogTitle.innerText = data[0].title.toUpperCase();
     blogInfo.innerText = `By ${data[0].username} \n ${data[0].date} \n\n ${data[0].text}`;
 
-    blogTable.style.textAlign = "center";
+    // blogTable.style.textAlign = "center";
     blogTitle.style.fontSize = "50px";
-    blogInfo.style.marginLeft = "0px"
-    blogInfo.style.fontSize = "20px"
+    // blogInfo.style.marginLeft = "0px"
+    blogInfo.style.fontSize = "16px"
 }
 
 const getComment = () => {
@@ -76,7 +142,7 @@ const renderPostComment = (postComments) => {
     if (totalComment != 0) {
         for (let i=0; i < totalComment; i++) {
             if (postComments[i].title == postId) {
-                commentUser = postComments[i].username.bold();
+                commentUser = postComments[i].username;
                 commentText = postComments[i].comment;
                 commentDate = postComments[i].date.toLocaleString('en-US');
 
@@ -88,32 +154,32 @@ const renderPostComment = (postComments) => {
     adjustCommentBox(total);
 }
 
+// Check if any comments present and adjust commentBox accordingly
 const adjustCommentBox = (total) => {
     const commentBox = document.getElementById('allComments');
     if (total == 0) {
-        commentBox.style.height = "100px"
+        commentBox.style.height = "200px"
         const p = document.createElement("p");
         p.className = "noCommentText";
         p.innerHTML = "There are currently no comments";
         commentBox.appendChild(p);
     } else {
-        commentBox.style.height = "500px"
+        commentBox.style.height = "1000px"
     }
 }
 
-// add comments dynamically
+// Add comments dynamically
 const commentContainer = document.getElementById('allComments');
-document.getElementById('addComments').addEventListener('click', function () {
 
-    var date = new Date().toLocaleString('en-US')
-    postComment(date);
-    addComment(date);
+document.getElementById('addComments').addEventListener('click', function () {
+    $("#myModal").modal("show");
 });
 
-const postComment = (date) => {
-    var username = document.getElementById("userInput").value;
-    var comment = document.getElementById("newComment").value;
-
+function postComment() {
+    let username = document.getElementById("userInput").value;
+    let comment = document.getElementById("newComment").value;
+    let date = new Date().toLocaleString('en-US')
+    
     const data = { 
         username: username,
         title: postId,
@@ -127,7 +193,9 @@ const postComment = (date) => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        
     });
+    addComment(date);
 }
 
 // handles comments added dynamically or any comment chains
@@ -136,32 +204,45 @@ function addComment(date) {
     if (document.getElementsByClassName('noCommentText').length != 0) {
         var element = document.getElementsByClassName('noCommentText')[0];
         element.parentNode.removeChild(element);
+        const commentBox = document.getElementById('allComments');
+        commentBox.style.height = "1000px"
     }
-    const commentBox = document.getElementById('allComments');
-    commentBox.style.height = "500px"
 
-    commentUser = document.getElementById('userInput').value.bold();
+    commentUser = document.getElementById('userInput').value;
     commentText = document.getElementById('newComment').value;
     populateComment(commentUser, commentText, date);
 }
 
 const populateComment = (commentUser, commentText, commentDate, commentId) => {
-    const textBox = document.createElement('div');
-    const replyButton = document.createElement('button');
-    const likeButton = document.createElement('button');
+    const textBox = document.createElement('p');
+    textBox.className = 'commentInfo';
+    const divider = document.createElement("div")
+
+    const likeButton = document.createElement('a');
     likeButton.innerHTML = 'Like';
-    likeButton.className = 'likeComment';
-    const deleteButton = document.createElement('button');
+    likeButton.className = 'likeComment waves-effect waves-light btn-large';
+
+    const updateBtn = document.createElement("a");
+    updateBtn.innerText = 'Edit Comment';
+    updateBtn.className = 'editComment waves-effect waves-light btn-large';
+
+    const deleteButton = document.createElement('a');
     deleteButton.innerHTML = 'Delete';
-    deleteButton.className = 'deleteComment';
+    deleteButton.className = 'deleteComment waves-effect waves-light btn-large';
     deleteButton.id = commentId
+
     const wrapDiv = document.createElement('div');
     wrapDiv.className = 'wrapper';
+    wrapDiv.id = commentId;
     wrapDiv.style.marginLeft = 0;
+
+    divider.className = "blogPostDivider"
+
     document.getElementById('userInput').value = '';
     document.getElementById('newComment').value = '';
-    textBox.innerHTML = `<hr>${commentDate}<h4>${commentUser}</h4>${commentText}`
-    wrapDiv.append(textBox, likeButton, deleteButton);
+
+    textBox.innerHTML = `${commentDate}<h5>${commentUser}</h5>${commentText}`
+    wrapDiv.append(textBox, divider, likeButton, updateBtn, deleteButton);
     commentContainer.appendChild(wrapDiv);
 }
   
@@ -171,24 +252,61 @@ function hasClass(elem, className) {
 }
 
 let likeBtnValue = 0;
-
+let currentCommentId;
 document.getElementById('allComments').addEventListener('click', function (e) {
     if(hasClass(e.target, 'likeComment')) {
          likeBtnValue+=1
          e.target.innerHTML = `Likes: ${likeBtnValue}`
+    } else if (hasClass(e.target, 'editComment')) {
+        currentCommentId = e.target.parentNode.id;
+        $("#myModal2").modal("show");
     } else if(hasClass(e.target, 'deleteComment')) {
         e.target.parentElement.remove();
-        let commentId = e.target.id
+        let commentId = e.target.id;
+    
         fetch(`${commentUrl}&id=${commentId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => console.log(res))
-      .catch((data) => console.log(data));
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        .then((res) => console.log(res))
+        .catch((data) => console.log(data));
     }
 });
+
+function updateComment() {
+
+    let commentDiv = document.getElementById(currentCommentId)
+    let commentToEdit = commentDiv.getElementsByClassName("commentInfo")[0].innerHTML
+    commentDiv = commentDiv.getElementsByClassName("commentInfo")[0]
+
+    let editUser = document.getElementById('editUser').value
+    let editComment = document.getElementById('editComment').value
+    let date = commentToEdit.split("<h5>")[0];
+
+    commentDiv.innerHTML = `${date}<h5>${editUser}</h5>${editComment}`
+ 
+    updateDB(postId, editUser, editComment, date, currentCommentId) 
+    $("form")[0].reset();
+}
+
+const updateDB = (postId, editUser, editComment, date, currentCommentId) => {
+    const data = {
+        username: editUser,
+        title: postId,
+        comment: editComment,
+        date: date,
+    };
+    fetch(`${commentUrl}&id=${currentCommentId}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+    },
+        body: JSON.stringify(data),
+    });
+}
+
 
 getSinglePost();
 getComment();
@@ -197,7 +315,7 @@ getComment();
 
 <style>
 
-    .container {
+    /* .container {
         margin: 0 100px 100px 100px;
         background: #fff;
         border-radius: 8px;
@@ -269,6 +387,83 @@ getComment();
 
     label {
         font-weight: bold;
+    } */
+    div#postContainer, h5 a {
+        margin: 5%;
     }
-    
+   
+    h4 {
+        margin: 0% 0% 5% 5% ;
+    }
+
+    h5 {
+        font-weight: bold;
+    }
+
+    .wrapper {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        padding: 30px 30px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .blogPostDivider {
+        width: 100%;
+        height: 0;
+        border: 1px solid #C4C4C4;
+        margin: 20px 0;
+        display:inline-block;
+    }
+
+    #allComments {
+        font-size: small;
+        overflow: auto;
+        box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
+        padding: 30px;
+    }
+
+    button.waves-effect.waves-light.btn-large {
+        z-index: -1;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    a.waves-effect.waves-light.btn-large {
+        margin: 10px;
+    }
+
+    div#myModal, div#myModal2 {
+        z-index: 10;
+        /* position: "absolute"; */
+        margin-top: 145px;
+        /* right: "20px"; */
+    }
+    nav ul li {
+        float: none;
+    }
+
+    nav .brand-logo {
+        font-size: 70px;
+    }
+
+    ul.tabs.tabs-transparent.center {
+        padding: 50px;
+    }
+
+    .nav-wrapper {
+        padding: 50px;
+    }
+
+    .likeComment, .editComment, .deleteComment {
+        padding: 10px;
+        line-height: 0px;
+        height: 20px;
+        font-size: 10px;
+    }
+
+    #addComments {
+        margin: 50px 0px;
+    }
+
 </style>

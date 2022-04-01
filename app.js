@@ -81,7 +81,7 @@ const createPostElement = (post, initial) => {
   blogPost.appendChild(viewComments);
   blogPost.appendChild(deletePost);
 
-  blogTitle.innerText = post.title;
+  blogTitle.innerText = post.title.toUpperCase();
   blogInfo.innerText = `By ${post.username}\n${post.date}\n\n${post.text}`;
   updateBtn.innerText = "Edit Post";
   viewComments.innerText = "View Comments";
@@ -135,7 +135,7 @@ const addBlogPosts = (post) => {
 }
 
 const openModal = () => {
-  $(".btn").click(function () {
+  $(".material-icons").click(function () {
     $("#myModal").modal("show");
   });
 
@@ -165,8 +165,8 @@ function showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, de
   SAVE_BTN.innerText = "Save";
 
   //Putting all DOM elements into arrays to simplify code for next steps
-  let originalItems = [blogTitle, blogInfo, updateBtn, viewComments, deletePost, divider];
-  let newItems = [editTitle, editUsername, markupDate, editText, CANCEL_BTN, SAVE_BTN, divider];
+  let originalItems = [blogTitle, blogInfo, divider, updateBtn, viewComments, deletePost];
+  let newItems = [editTitle, editUsername, markupDate, editText, divider, CANCEL_BTN, SAVE_BTN];
 
   //Removing the original content from the post
   originalItems.forEach((blogItem) => {
@@ -188,7 +188,7 @@ function showEditPost(blogTitle, blogInfo, blogPost, updateBtn, viewComments, de
     let postId = e.target.parentElement.id;
     username = editUsername.value;
     blogText = editText.value;
-    blogTitle.innerText = editTitle.value;
+    blogTitle.innerText = editTitle.value.toUpperCase();
     blogInfo.innerText = `By ${username}\n${date}\n\n${blogText}`;
     putContentBack();
     updateDB(postId, editTitle.value, username, blogText, date);
