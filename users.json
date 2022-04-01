@@ -1,0 +1,26 @@
+[
+  {
+    "UserId": 1,
+    "Username": "WeatherNut",
+    "Blog": "Weather",
+    "Comments": "Its a sunny day today"
+  },
+  {
+    "UserId": 2,
+    "Username": "NachoCheeze",
+    "Blog": "Food blog",
+    "Comments": "I like Food"
+  },
+  {
+    "UserId": 3,
+    "Username": "Super",
+    "Blog": "Awesome",
+    "Comments": "Great"
+  },
+  {
+    "UserId": 4,
+    "Username": "Mailman",
+    "Blog": "Delivery",
+    "Comments": "Here is your mail"
+  }
+]
