@@ -1,5 +1,6 @@
 let blogPostList = [];
 let url = "https://mynotes33.azurewebsites.net/api/Blog?code=vuwV9RVS2pieuavif8Pc6PLV0ubWg7zSYVjtiRE2sOOHVPh3E/RPdw==";
+const commentUrl = "https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==";
 
 window.onload = function () {
   getData();
@@ -99,35 +100,58 @@ const createPostElement = (post, initial) => {
     window.location.href = `singlePost.html?id=${postID}`;
   };
 
-  deletePost.onclick = function (e){
-    console.log(e)
-  }
+  // deletePost.onclick = function (e){
+  //   console.log(e)
+  // }
   deletePost.addEventListener('click', (e) => {
-    console.log("hi?")
     if (e.target.id === "deletePost") {
-      deleteSelectedPost(post)
-      e.target.parentElement.remove();
+      let text = "Are you sure?";
+      if (confirm(text) == true) {
+        deleteSelectedPost(post)
+        e.target.parentElement.remove();
+      }
     }
   })
-
-  // styleButtons(updateBtn, viewComments, deletePost)
 
   function hasClass(elem, className) {
     return elem.className.split(' ').indexOf(className) > -1;
   }
 
-  function deleteSelectedPost(post) {
-    let postId = post._id;
-    fetch(`${url}&id=${postId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => console.log(res))
-      .catch((data) => console.log(data));
-  };
 };
+
+function deleteSelectedPost(post) {
+  let postId = post._id;
+  fetch(`${url}&id=${postId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  .then((res) => console.log(res))
+  .catch((data) => console.log(data));
+  deleteCommentsOfPost(post._id);
+};
+
+
+const deleteCommentsOfPost = (postId) => {
+  fetch(commentUrl)
+    .then((response) => response.json())
+    .then((data) => {
+      for (let i=0; i < data.response.length; i++) {
+        if (data.response[i].title == postId) {
+          fetch(`${commentUrl}&id=${data.response[i]._id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+          })
+          .then((res) => console.log(res))
+          .catch((data) => console.log(data));
+        };
+      }
+    })
+    .catch((error) => console.log(error));
+}
 
 const addBlogPosts = (post) => {
   blogPostList.unshift(post);

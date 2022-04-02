@@ -261,17 +261,20 @@ document.getElementById('allComments').addEventListener('click', function (e) {
         currentCommentId = e.target.parentNode.id;
         $("#myModal2").modal("show");
     } else if(hasClass(e.target, 'deleteComment')) {
-        e.target.parentElement.remove();
-        let commentId = e.target.id;
-    
-        fetch(`${commentUrl}&id=${commentId}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-        .then((res) => console.log(res))
-        .catch((data) => console.log(data));
+        let text = "Are you sure?";
+        if (confirm(text) == true) {
+            e.target.parentElement.remove();
+            let commentId = e.target.id;
+        
+            fetch(`${commentUrl}&id=${commentId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then((res) => console.log(res))
+            .catch((data) => console.log(data));
+        }
     }
 });
 
