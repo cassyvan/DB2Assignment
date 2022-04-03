@@ -18,37 +18,60 @@ const config = {
 
 const connection = new Connection(config);
 
-// Attempt to connect and execute queries if connection goes through
-connection.on("connect", err => {
-  if (err) {
-    console.error(err.message);
-  } else {
-    queryDatabase();
-  }
-});
-
-connection.connect();
-
 function queryDatabase() {
   console.log("Reading rows from the Table...");
 
-  // Read all rows from table
-  con.connect(function(err) {
+  return connection.connect(function(err) {
     if (err) throw err;
-    con.query("SELECT * FROM Users", function (err, result, fields) {
-      if (err) throw err;
-      console.log(result);
+     // Read all rows from table
+     const request = new Request(
+       `SELECT * FROM Users`,
+       (err, rowCount) => {
+         if (err) {
+           console.error(err.message);
+          } else {
+            console.log(`${rowCount} row(s) returned`);
+          }
+          connection.close();
+        }
+      );
+
+    request.on("row", columns => {
+      columns.forEach(column => {
+        console.log("%s\t%s", column.metadata.colName, column.value);
+      });
     });
+
+    connection.execSql(request);
   });
+}
 
-//Add User record to SQL database
-connection.query('INSERT INTO `Users` (`UserID`, `Username`, `Blog`, `Comments`) VALUES (5, "PeterPan", "Neverland", "Happy Thoughts")', function (error, results, fields) {
-  if (error) throw error;
-  console.log('The response is: ', results);
-});
+function addUser(userName) {
+  return connection.connect(function(err) {
+    if (err) throw err;
+     // Read all rows from table
+     const request = new Request(
+      `INSERT INTO Users(Username) Values('${userName}')`,
+       (err, rowCount) => {
+         if (err) console.error(err.message);
+         connection.close();
+        }
+      );
+    connection.execSql(request);
+  });
+}
 
-//delete User record from SQL database
-connection.query('delete from Users where id=1', function (error, results, fields) {
-  if (error) throw error;
-  console.log('The response is: ', results);
-});
+function removeUser(userName) {
+  return connection.connect(function(err) {
+    if (err) throw err;
+     // Read all rows from table
+     const request = new Request(
+      `DELETE FROM Users WHERE Username = '${userName}'`,
+       (err, rowCount) => {
+         if (err) console.error(err.message);
+         connection.close();
+        }
+      );
+    connection.execSql(request);
+  });
+}
