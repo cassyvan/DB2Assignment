@@ -45,10 +45,8 @@
                     </div>
                 <div class="modal-body">
                     <form> 
-                    <label for="editUser">*New User
-                        <!-- TODO: SHOW USERNAME -->
+                    <label for="editUser" id="editUser">
                     </label><br><br>
-                    <input type="editUser" id="editUser" name="editUser"><br><br>
                     <label for="editComment">*New Comment:</label><br><br>
                     <textarea type="text" id="editComment" name="editComment"></textarea><br><br>
                 </div>
@@ -118,13 +116,9 @@ const renderPostInfo = (data) => {
     blogPost.appendChild(blogTitle);
     blogPost.appendChild(blogInfo);
 
-  
     blogTitle.innerText = data[0].title.toUpperCase();
     blogInfo.innerText = `By ${data[0].username} \n ${data[0].date} \n\n ${data[0].text}`;
-
-    // blogTable.style.textAlign = "center";
     blogTitle.style.fontSize = "50px";
-    // blogInfo.style.marginLeft = "0px"
     blogInfo.style.fontSize = "16px"
 }
 
@@ -175,6 +169,7 @@ const commentContainer = document.getElementById('allComments');
 
 document.getElementById('addComments').addEventListener('click', function () {
     $("#myModal").modal("show");
+ 
 });
 
 async function postComment() {
@@ -270,8 +265,7 @@ document.getElementById('allComments').addEventListener('click', function (e) {
     } else if (hasClass(e.target, 'editComment')) {
         currentCommentId = e.target.parentNode.id;
         $("#myModal2").modal("show");
-        // let x = document.getElementById(label#editUser);
-        // console.log(x)
+        modalUsername(e.target.parentNode);
     } else if(hasClass(e.target, 'deleteComment')) {
         let text = "Are you sure?";
         if (confirm(text) == true) {
@@ -279,6 +273,15 @@ document.getElementById('allComments').addEventListener('click', function (e) {
         }
     }
 });
+
+function modalUsername(node) {
+    node = node.getElementsByClassName("commentInfo")[0];
+    username = node.querySelector("h5").innerHTML;
+    let userLabel = document.getElementById("editUser")
+    userLabel.innerHTML = username;
+    userLabel.style.fontSize = "20px"
+    userLabel.style.color = "black"
+}
 
 async function deleteComment(commentId, e){
     await fetch(`${commentUrl}&id=${commentId}`, {
@@ -298,12 +301,9 @@ function updateComment() {
     let commentDiv = document.getElementById(currentCommentId)
     let commentToEdit = commentDiv.getElementsByClassName("commentInfo")[0].innerHTML
     commentDiv = commentDiv.getElementsByClassName("commentInfo")[0]
-    // console.log(commentDiv)
-    // // let editUser = commentDiv.h5
     let editUser = document.getElementById('editUser').value
     let editComment = document.getElementById('editComment').value
     let editDate = `Last modified: ${new Date().toLocaleString("en-US")}`
-    // let date = commentToEdit.split("<h5>")[0];
 
     if (!editComment){
         alert("Information is missing. Please enter for all field provided.")
@@ -338,79 +338,6 @@ getComment();
 
 <style>
 
-    /* .container {
-        margin: 0 100px 100px 100px;
-        background: #fff;
-        border-radius: 8px;
-    }
-
-    .comment {
-        display: block;
-        transition: all 1s;
-    }
-
-    .commentClicked {
-        min-height: 0px;
-        border: 1px solid #eee;
-        border-radius: 5px;
-        padding: 5px 10px
-    }
-
-    .container textarea, input {
-        width: 50%;
-        border: none;
-        background: #E8E8E8;
-        padding: 5px 10px;
-        border-radius: 5px 5px 0px 0px;
-        border-bottom: 2px solid #016BA8;
-        transition: all 0.5s;
-        margin-top: 20px;
-        margin-left: 20px;
-    }
-
-    button.primaryContained {
-        background: #016ba8;
-        color: #fff;
-        padding: 10px 10px;
-        border: none;
-        margin-top: 0px;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 4px;
-        box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.25);
-        transition: 1s all;
-        font-size: 10px;
-        border-radius: 5px;
-    }
-
-    #allComments {
-        font-size: small;
-        overflow: auto;
-    }
-
-    h2 {
-        margin-left: 100px;
-    }
-
-    .wrapper, label {
-        padding: 20px;
-    }
-
-    .container textarea, input, allComments, h2, .wrapper, label, p {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    button {
-        margin: 20px 20px 0 0;
-    }
-
-    #addComments, p {
-        margin: 20px;
-    }
-
-    label {
-        font-weight: bold;
-    } */
     div#postContainer, h5 a {
         margin: 5%;
     }
