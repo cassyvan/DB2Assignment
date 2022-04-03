@@ -34,6 +34,7 @@ function queryDatabase() {
           } else {
             console.log(`${rowCount} row(s) returned`);
           }
+          connection.close();
         }
       );
 
