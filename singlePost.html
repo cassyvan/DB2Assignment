@@ -22,9 +22,9 @@
                     </div>
                 <div class="modal-body">
                     <form> 
-                    <label for="userInput"> Username:</label><br><br>
+                    <label for="userInput">*Username:</label><br><br>
                     <input type="userInput" id="userInput" name="userInput"><br><br>
-                    <label for="newComment">Comment:</label><br><br>
+                    <label for="newComment">*Comment:</label><br><br>
                     <textarea type="text" id="newComment" name="newComment"></textarea><br><br>
                 </div>
                 <div class="modal-footer">
@@ -45,9 +45,11 @@
                     </div>
                 <div class="modal-body">
                     <form> 
-                    <label for="editUser"> New Username:</label><br><br>
+                    <label for="editUser">*New User
+                        <!-- TODO: SHOW USERNAME -->
+                    </label><br><br>
                     <input type="editUser" id="editUser" name="editUser"><br><br>
-                    <label for="editComment">New Comment:</label><br><br>
+                    <label for="editComment">*New Comment:</label><br><br>
                     <textarea type="text" id="editComment" name="editComment"></textarea><br><br>
                 </div>
                 <div class="modal-footer">
@@ -175,27 +177,32 @@ document.getElementById('addComments').addEventListener('click', function () {
     $("#myModal").modal("show");
 });
 
-function postComment() {
+async function postComment() {
     let username = document.getElementById("userInput").value;
     let comment = document.getElementById("newComment").value;
-    let date = new Date().toLocaleString('en-US')
+    let date = `Created: ${new Date().toLocaleString("en-US")}`
     
-    const data = { 
-        username: username,
-        title: postId,
-        comment: comment,
-        date: date
-    };
+    if (!username || !comment){
+        alert("Information is missing. Please enter for all field provided.")
+    } else {
+        const data = { 
+            username: username,
+            title: postId,
+            comment: comment,
+            date: date
+        };
 
-    fetch('https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==', {
-        method: 'POST', // or 'PUT'
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        
-    });
-    addComment(date);
+        await fetch('https://mynotes33.azurewebsites.net/api/Comments?code=gf0aiT/bzaNOUl/t9YE2L4rsPnO2AEsraHqWCaGqo2sXKOYX3fmQXw==', {
+            method: 'POST', // or 'PUT'
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+            
+        });
+        addComment(date);
+    }
+    $("form")[0].reset();   
 }
 
 // handles comments added dynamically or any comment chains
@@ -211,6 +218,8 @@ function addComment(date) {
     commentUser = document.getElementById('userInput').value;
     commentText = document.getElementById('newComment').value;
     populateComment(commentUser, commentText, date);
+    alert(`Your comment has been successfully added`);
+    window.location.reload()
 }
 
 const populateComment = (commentUser, commentText, commentDate, commentId) => {
@@ -251,55 +260,66 @@ function hasClass(elem, className) {
     return elem.className.split(' ').indexOf(className) > -1;
 }
 
-let likeBtnValue = 0;
 let currentCommentId;
 document.getElementById('allComments').addEventListener('click', function (e) {
+    let commentId = e.target.id;
+    let likeBtnValue = 0;
     if(hasClass(e.target, 'likeComment')) {
          likeBtnValue+=1
          e.target.innerHTML = `Likes: ${likeBtnValue}`
     } else if (hasClass(e.target, 'editComment')) {
         currentCommentId = e.target.parentNode.id;
         $("#myModal2").modal("show");
+        // let x = document.getElementById(label#editUser);
+        // console.log(x)
     } else if(hasClass(e.target, 'deleteComment')) {
         let text = "Are you sure?";
         if (confirm(text) == true) {
-            e.target.parentElement.remove();
-            let commentId = e.target.id;
-        
-            fetch(`${commentUrl}&id=${commentId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-            .then((res) => console.log(res))
-            .catch((data) => console.log(data));
+            deleteComment(commentId, e)
         }
     }
 });
+
+async function deleteComment(commentId, e){
+    await fetch(`${commentUrl}&id=${commentId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then((res) => console.log(res))
+    .catch((data) => console.log(data));
+    e.target.parentElement.remove();
+    window.location.reload();
+}
 
 function updateComment() {
 
     let commentDiv = document.getElementById(currentCommentId)
     let commentToEdit = commentDiv.getElementsByClassName("commentInfo")[0].innerHTML
     commentDiv = commentDiv.getElementsByClassName("commentInfo")[0]
-
+    // console.log(commentDiv)
+    // // let editUser = commentDiv.h5
     let editUser = document.getElementById('editUser').value
     let editComment = document.getElementById('editComment').value
-    let date = commentToEdit.split("<h5>")[0];
+    let editDate = `Last modified: ${new Date().toLocaleString("en-US")}`
+    // let date = commentToEdit.split("<h5>")[0];
 
-    commentDiv.innerHTML = `${date}<h5>${editUser}</h5>${editComment}`
- 
-    updateDB(postId, editUser, editComment, date, currentCommentId) 
+    if (!editComment){
+        alert("Information is missing. Please enter for all field provided.")
+    } else {
+        commentDiv.innerHTML = `${editDate}<h5>${editUser}</h5>${editComment}`
+        updateDB(postId, editUser, editComment, editDate, currentCommentId) 
+    }
     $("form")[0].reset();
 }
 
-const updateDB = (postId, editUser, editComment, date, currentCommentId) => {
+const updateDB = (postId, editUser, editComment, editDate, currentCommentId) => {
     const data = {
         username: editUser,
         title: postId,
         comment: editComment,
-        date: date,
+        date: editDate,
     };
     fetch(`${commentUrl}&id=${currentCommentId}`, {
         method: "PATCH",
