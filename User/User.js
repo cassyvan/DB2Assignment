@@ -42,33 +42,38 @@ function queryDatabase() {
         console.log("%s\t%s", column.metadata.colName, column.value);
       });
     });
-    
+
     connection.execSql(request);
-    connection.close();
+    // connection.close();
   });
 }
 
 function addUser(userName) {
-  connection.on("connect", err => {
-    if (err) {
-      console.error(err.message);
-    } else {
-      if (err) throw err;
-      var sql = `INSERT INTO Users(Username) VALUES(${userName})`;
-      connection.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log("1 row inserted");
-      });
-    }
+  connection.connect(function(err) {
+    if (err) throw err;
+     // Read all rows from table
+     const request = new Request(
+      `INSERT INTO Users(Username) Values('${userName}')`,
+       (err, rowCount) => {
+         if (err) console.error(err.message);
+        }
+      );
+    connection.execSql(request);
+    // connection.close();
   });
-  connection.connect();
 }
 
 function reomveUser(userName) {
-  const query = new Request(
-    `DELETE FROM Users WHERE Username = '${userName}')`,
-    (err) => {
-      if (err) console.error(err.message);
+  connection.connect(function(err) {
+    if (err) throw err;
+     // Read all rows from table
+     const request = new Request(
+      `DELETE FROM Users WHERE Username = '${userName}'`,
+       (err, rowCount) => {
+         if (err) console.error(err.message);
+        }
+      );
+    connection.execSql(request);
+    // connection.close();
   });
-  query.execute();
 }
