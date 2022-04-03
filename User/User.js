@@ -18,12 +18,10 @@ const config = {
 
 const connection = new Connection(config);
 
-queryDatabase();
-
 function queryDatabase() {
   console.log("Reading rows from the Table...");
 
-  connection.connect(function(err) {
+  return connection.connect(function(err) {
     if (err) throw err;
      // Read all rows from table
      const request = new Request(
@@ -45,36 +43,35 @@ function queryDatabase() {
     });
 
     connection.execSql(request);
-    // connection.close();
   });
 }
 
 function addUser(userName) {
-  connection.connect(function(err) {
+  return connection.connect(function(err) {
     if (err) throw err;
      // Read all rows from table
      const request = new Request(
       `INSERT INTO Users(Username) Values('${userName}')`,
        (err, rowCount) => {
          if (err) console.error(err.message);
+         connection.close();
         }
       );
     connection.execSql(request);
-    // connection.close();
   });
 }
 
-function reomveUser(userName) {
-  connection.connect(function(err) {
+function removeUser(userName) {
+  return connection.connect(function(err) {
     if (err) throw err;
      // Read all rows from table
      const request = new Request(
       `DELETE FROM Users WHERE Username = '${userName}'`,
        (err, rowCount) => {
          if (err) console.error(err.message);
+         connection.close();
         }
       );
     connection.execSql(request);
-    // connection.close();
   });
 }
