@@ -18,37 +18,57 @@ const config = {
 
 const connection = new Connection(config);
 
-// Attempt to connect and execute queries if connection goes through
-connection.on("connect", err => {
-  if (err) {
-    console.error(err.message);
-  } else {
-    queryDatabase();
-  }
-});
-
-connection.connect();
+queryDatabase();
 
 function queryDatabase() {
   console.log("Reading rows from the Table...");
 
- // Read all rows from table
- const request = new Request(
-  `SELECT * FROM Users`,
-  (err, rowCount) => {
+  connection.connect(function(err) {
+    if (err) throw err;
+     // Read all rows from table
+     const request = new Request(
+       `SELECT * FROM Users`,
+       (err, rowCount) => {
+         if (err) {
+           console.error(err.message);
+          } else {
+            console.log(`${rowCount} row(s) returned`);
+          }
+        }
+      );
+
+    request.on("row", columns => {
+      columns.forEach(column => {
+        console.log("%s\t%s", column.metadata.colName, column.value);
+      });
+    });
+    
+    connection.execSql(request);
+    connection.close();
+  });
+}
+
+function addUser(userName) {
+  connection.on("connect", err => {
     if (err) {
       console.error(err.message);
     } else {
-      console.log(`${rowCount} row(s) returned`);
+      if (err) throw err;
+      var sql = `INSERT INTO Users(Username) VALUES(${userName})`;
+      connection.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log("1 row inserted");
+      });
     }
-  }
-);
-
-request.on("row", columns => {
-  columns.forEach(column => {
-    console.log("%s\t%s", column.metadata.colName, column.value);
   });
-});
+  connection.connect();
+}
 
-connection.execSql(request);
+function reomveUser(userName) {
+  const query = new Request(
+    `DELETE FROM Users WHERE Username = '${userName}')`,
+    (err) => {
+      if (err) console.error(err.message);
+  });
+  query.execute();
 }
