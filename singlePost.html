@@ -222,10 +222,6 @@ const populateComment = (commentUser, commentText, commentDate, commentId) => {
     textBox.className = 'commentInfo';
     const divider = document.createElement("div")
 
-    const likeButton = document.createElement('a');
-    likeButton.innerHTML = 'Like';
-    likeButton.className = 'likeComment waves-effect waves-light btn-large';
-
     const updateBtn = document.createElement("a");
     updateBtn.innerText = 'Edit Comment';
     updateBtn.className = 'editComment waves-effect waves-light btn-large';
@@ -246,7 +242,7 @@ const populateComment = (commentUser, commentText, commentDate, commentId) => {
     document.getElementById('newComment').value = '';
 
     textBox.innerHTML = `${commentDate}<h5>${commentUser}</h5>${commentText}`
-    wrapDiv.append(textBox, divider, likeButton, updateBtn, deleteButton);
+    wrapDiv.append(textBox, divider, updateBtn, deleteButton);
     commentContainer.appendChild(wrapDiv);
 }
   
@@ -301,7 +297,7 @@ function updateComment() {
     let commentDiv = document.getElementById(currentCommentId)
     let commentToEdit = commentDiv.getElementsByClassName("commentInfo")[0].innerHTML
     commentDiv = commentDiv.getElementsByClassName("commentInfo")[0]
-    let editUser = document.getElementById('editUser').value
+    let editUser = document.getElementById('editUser').innerHTML
     let editComment = document.getElementById('editComment').value
     let editDate = `Last modified: ${new Date().toLocaleString("en-US")}`
 
