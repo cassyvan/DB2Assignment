@@ -265,10 +265,10 @@ function showEditPost(
     let newDate = `Last modified: ${new Date().toLocaleString("en-US")}`;
     // username = editUsername.value;
     blogText = editText.value;
-    blogTitle.innerText = editTitle.value.toUpperCase();
-    blogInfo.innerText = `By ${username}\n${newDate}\n\n${blogText}`;
     putContentBack();
     updateDB(postId, editTitle.value, blogText, newDate);
+    blogTitle.innerText = editTitle.value.toUpperCase();
+    blogInfo.innerText = `By ${username}\n${newDate}\n\n${blogText}`;
   };
 
   const updateDB = (postId, title, description, date) => {

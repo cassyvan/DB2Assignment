@@ -222,10 +222,6 @@ const populateComment = (commentUser, commentText, commentDate, commentId) => {
     textBox.className = 'commentInfo';
     const divider = document.createElement("div")
 
-    const likeButton = document.createElement('a');
-    likeButton.innerHTML = 'Like';
-    likeButton.className = 'likeComment waves-effect waves-light btn-large';
-
     const updateBtn = document.createElement("a");
     updateBtn.innerText = 'Edit Comment';
     updateBtn.className = 'editComment waves-effect waves-light btn-large';
@@ -246,7 +242,7 @@ const populateComment = (commentUser, commentText, commentDate, commentId) => {
     document.getElementById('newComment').value = '';
 
     textBox.innerHTML = `${commentDate}<h5>${commentUser}</h5>${commentText}`
-    wrapDiv.append(textBox, divider, likeButton, updateBtn, deleteButton);
+    wrapDiv.append(textBox, divider, updateBtn, deleteButton);
     commentContainer.appendChild(wrapDiv);
 }
   
@@ -258,11 +254,7 @@ function hasClass(elem, className) {
 let currentCommentId;
 document.getElementById('allComments').addEventListener('click', function (e) {
     let commentId = e.target.id;
-    let likeBtnValue = 0;
-    if(hasClass(e.target, 'likeComment')) {
-         likeBtnValue+=1
-         e.target.innerHTML = `Likes: ${likeBtnValue}`
-    } else if (hasClass(e.target, 'editComment')) {
+    if (hasClass(e.target, 'editComment')) {
         currentCommentId = e.target.parentNode.id;
         $("#myModal2").modal("show");
         modalUsername(e.target.parentNode);
@@ -301,7 +293,7 @@ function updateComment() {
     let commentDiv = document.getElementById(currentCommentId)
     let commentToEdit = commentDiv.getElementsByClassName("commentInfo")[0].innerHTML
     commentDiv = commentDiv.getElementsByClassName("commentInfo")[0]
-    let editUser = document.getElementById('editUser').value
+    let editUser = document.getElementById('editUser').innerHTML;
     let editComment = document.getElementById('editComment').value
     let editDate = `Last modified: ${new Date().toLocaleString("en-US")}`
 
